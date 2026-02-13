@@ -1,10 +1,17 @@
 pipeline{
   agent {label "$(LABEL_NAME)"}
 
+  environment{
+    $IMAGE_NAME = "myapp"
+    $IMAGE_TAG = "${BUILD_NUMBER}"
+    $CONTAINER_NAME = "webapp"
+    $DOCKER_CREDS = credentials(dockerhub-creds)
+  }
+
   stages{
     stage('code'){
       steps{
-        git url:"",branch:"main"
+        git url:"https://github.com/shikoh-zaidi/dockerimgpush.git",branch:"main"
       }
     }
 
@@ -16,7 +23,7 @@ pipeline{
 
     stage('IMAGE_CHECK'){
       steps{
-        sh " trivy image --severity CRITICAL --exit-code 0 $IMAGE_NAME:IMAGE_TAG "
+        sh " trivy image --severity CRITICAL --exit-code 0 $IMAGE_NAME:$IMAGE_TAG "
       }
     }
 
@@ -31,9 +38,8 @@ pipeline{
       steps{
         sh " docker stop $CONTAINER_NAME || true "
         sh " docker rm $CONTAINER_NAME || true "
-        sh " docker run -d --name $CONTAINER_NAME -p 80:5000 $IMAGE_NAME:$IMAGE_TAG"
+        sh " docker run -d --name $CONTAINER_NAME -p 80:5000 $IMAGE_NAME:$IMAGE_TAG "
       }
     }
   }
-
 }
