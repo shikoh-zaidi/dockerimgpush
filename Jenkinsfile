@@ -2,7 +2,7 @@ pipeline{
   agent { label "${LABEL_NAME}" }
 
   environment{
-    IMAGE_NAME = "myapp"
+    IMAGE_NAME = "shikohzaidi/myapp"
     IMAGE_TAG = "${BUILD_NUMBER}"
     CONTAINER_NAME = "webapp"
     DOCKER_CREDS = credentials('dockerhub-creds')
