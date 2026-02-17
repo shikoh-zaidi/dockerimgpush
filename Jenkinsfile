@@ -1,12 +1,18 @@
 pipeline{
   agent { label "${LABEL_NAME}" }
 
+  options {
+  timestamps
+  buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '1', numToKeepStr: '2')
+}
+
   environment{
     IMAGE_NAME = "shikohzaidi/myapp"
     IMAGE_TAG = "${BUILD_NUMBER}"
     CONTAINER_NAME = "webapp"
     DOCKER_CREDS = credentials('dockerhub-creds')
   }
+  
 
   stages{
     stage('code'){
@@ -43,7 +49,7 @@ pipeline{
     }
   }
     post{
-      sucess{
+      success{
         archiveArtifacts artifacts: '*.tar', followSymlinks: false
       }
       failure{
